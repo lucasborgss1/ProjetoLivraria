@@ -85,7 +85,7 @@ namespace ProjetoLivraria.DAO
                 try
                 {
                     ioConexao.Open();
-                    ioQuery = new SqlCommand("DELETE FROM AUT_AUTORES WHERE AUT_ID_AUTOR = @IdAutor", ioConexao);
+                    ioQuery = new SqlCommand("DELETE FROM AUT_AUTORES WHERE AUT_ID_AUTOR = @idAutor", ioConexao);
                     ioQuery.Parameters.Add(new SqlParameter("@idAutor", aoAutor.aut_id_autor));
                     liQtdRegistrosInseridos = ioQuery.ExecuteNonQuery();
                 }
