@@ -83,6 +83,7 @@
     <Compile Include="DAO\AutoresDAO.cs" />
     <Compile Include="DAO\EditoresDAO.cs" />
     <Compile Include="DAO\LivrosDAO.cs" />
+    <Compile Include="DAO\LivrosEAutoresDAO.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
