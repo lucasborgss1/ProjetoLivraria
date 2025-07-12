@@ -68,6 +68,7 @@
     <Content Include="Global.asax" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Livraria\GerenciamentoAutores.aspx" />
     <Content Include="Site.master" />
   </ItemGroup>
   <ItemGroup>
@@ -88,6 +89,13 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Livraria\GerenciamentoAutores.aspx.cs">
+      <DependentUpon>GerenciamentoAutores.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Livraria\GerenciamentoAutores.aspx.designer.cs">
+      <DependentUpon>GerenciamentoAutores.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Models\Autores.cs" />
     <Compile Include="Models\Editores.cs" />
     <Compile Include="Models\Livros.cs" />
@@ -104,6 +112,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\licenses.licx" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
