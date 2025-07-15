@@ -50,6 +50,36 @@ namespace ProjetoLivraria.DAO
             return loListLivros;
         }
 
+        public BindingList<Livros> BuscarLivrosPorAutor(Autores adcAutor)
+        {
+            BindingList<Livros> loListLivros = new BindingList<Livros>();
+
+            using (ioConexao = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnectionString"].ConnectionString))
+            {
+                try
+                {
+                    ioConexao.Open();
+                    ioQuery = new SqlCommand("SELECT * FROM LIV_LIVROS liv INNER JOIN LIA_LIVRO_AUTOR lia ON liv.LIV_ID_LIVRO = lia.LIA_ID_LIVRO WHERE lia.LIA_ID_AUTOR = @idAutor", ioConexao);
+                    ioQuery.Parameters.Add(new SqlParameter("@idAutor", adcAutor.aut_id_autor));
+
+                    using (SqlDataReader loReader = ioQuery.ExecuteReader())
+                    {
+                        while (loReader.Read())
+                        {
+                            Livros loNovoLivro = new Livros(loReader.GetDecimal(0), loReader.GetDecimal(1), loReader.GetDecimal(2), loReader.GetString(3), loReader.GetDecimal(4), loReader.GetDecimal(5), loReader.GetString(6), loReader.GetInt32(7));
+                            loListLivros.Add(loNovoLivro);
+                        }
+                        loReader.Close();
+                    }
+                }
+                catch
+                {
+                    throw new Exception("Erro ao tentar buscar o(s) livro(s).");
+                }
+            }
+            return loListLivros;
+        }
+
         public int InsereLivro(Livros aoNovoLivro)
         {
             if (aoNovoLivro == null) throw new NullReferenceException();
@@ -129,5 +159,7 @@ namespace ProjetoLivraria.DAO
             }
             return liQtdRegistrosInseridos;
         }
+
+       
     }
 }
