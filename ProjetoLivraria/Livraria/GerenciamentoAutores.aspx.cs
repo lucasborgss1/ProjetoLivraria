@@ -64,6 +64,7 @@ namespace ProjetoLivraria.Livraria
             try
             {
                 
+                if (!Page.IsValid) return;
                 //Buscando nos autores já cadastrados o que possui o maior ID, e assim incrementando mais 1, evitando que a PrimaryKey se repita.(Esse campo não é auto-increment no banco.)
                 decimal ldcIdAutor = this.ListaAutores.OrderByDescending(a => a.aut_id_autor).First().aut_id_autor + 1;
 

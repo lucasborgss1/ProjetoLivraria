@@ -1,4 +1,4 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Site.master" AutoEventWireup="true" CodeBehind="GerenciamentoAutores.aspx.cs" Inherits="ProjetoLivraria.Livraria.GerenciamentoAutores" %>
+﻿<%@ Page Title="Gerenciamento de Autores" Language="C#" MasterPageFile="~/Site.master" AutoEventWireup="true" CodeBehind="GerenciamentoAutores.aspx.cs" Inherits="ProjetoLivraria.Livraria.GerenciamentoAutores" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
         <script>
             function OnEndCallback(s, e) {
@@ -6,8 +6,16 @@
                     window.location.href = '/Livraria/GerenciamentoLivros.aspx';
                 }
             }
+
+            function OnSalvarAutorClick(s, e) {
+                if (!ASPxClientEdit.ValidateGroup('MyGroup')) {
+                    e.processOnServer = false;
+                } else {
+                    e.processOnServer = true;
+                }
+            }
         </script>
-    <dx:ASPxFormLayout ID="ASPxFormLayout1" runat="server" Width="50%" Theme="Office365">
+    <dx:ASPxFormLayout ID="ASPxFormLayout1" runat="server" Width="100%" Theme="Office365">
         <Items>
             <dx:LayoutGroup Caption="" ColumnCount="2" SettingsItemCaptions-Location="Top">
                 <Items>
@@ -53,7 +61,11 @@
                     <dx:LayoutItem Caption="" ColumnSpan="2">
                         <LayoutItemNestedControlCollection>
                             <dx:LayoutItemNestedControlContainer runat="server">
-                                <dx:ASPxButton runat="server" Text="Salvar" AutoPostBack="false" Width="100%" OnClick="BtnNovoAutor_Click"/>
+                                <dx:ASPxButton runat="server" Text="Salvar" AutoPostBack="false" ValidationGroup="MyGroup" 
+                                    Width="100%" 
+                                    UseSubmitBehavior="false" 
+                                    OnClick="BtnNovoAutor_Click"
+                                    ClientSideEvents-Click ="OnSalvarAutorClick"/>
                             </dx:LayoutItemNestedControlContainer>
                         </LayoutItemNestedControlCollection>
                     </dx:LayoutItem>
