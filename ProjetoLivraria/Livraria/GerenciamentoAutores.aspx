@@ -1,5 +1,12 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Site.master" AutoEventWireup="true" CodeBehind="GerenciamentoAutores.aspx.cs" Inherits="ProjetoLivraria.Livraria.GerenciamentoAutores" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
+        <script>
+            function OnEndCallback(s, e) {
+                if (s.cpRedirectToLivros) {
+                    window.location.href = '/Livraria/GerenciamentoLivros.aspx';
+                }
+            }
+        </script>
     <dx:ASPxFormLayout ID="ASPxFormLayout1" runat="server" Width="50%" Theme="Office365">
         <Items>
             <dx:LayoutGroup Caption="" ColumnCount="2" SettingsItemCaptions-Location="Top">
@@ -46,7 +53,7 @@
                     <dx:LayoutItem Caption="" ColumnSpan="2">
                         <LayoutItemNestedControlCollection>
                             <dx:LayoutItemNestedControlContainer runat="server">
-                                <dx:ASPxButton runat="server" Text="Salvar" AutoPostBack="false" Width="100%" OnClick="BtnNovoAutor_Click" />
+                                <dx:ASPxButton runat="server" Text="Salvar" AutoPostBack="false" Width="100%" OnClick="BtnNovoAutor_Click"/>
                             </dx:LayoutItemNestedControlContainer>
                         </LayoutItemNestedControlCollection>
                     </dx:LayoutItem>
@@ -64,7 +71,7 @@
         
 
         <Columns>
-            <dx:GridViewDataTextColumn FieldName="aut_id_autor" Caption="id" Visible="false" />
+            <dx:GridViewDataTextColumn FieldName="aut_id_autor" Caption="Id" Visible="false" />
             <dx:GridViewDataTextColumn PropertiesTextEdit-MaxLength="15" FieldName="aut_nm_nome" Caption="Nome" />
             <dx:GridViewDataTextColumn PropertiesTextEdit-MaxLength="50" FieldName="aut_nm_sobrenome" Caption="Sobrenome" />
             <dx:GridViewDataTextColumn PropertiesTextEdit-MaxLength="50" FieldName="aut_ds_email" Caption="Email" />
@@ -76,12 +83,9 @@
                 </CustomButtons>
             </dx:GridViewCommandColumn>
         </Columns>
-
         <SettingsEditing Mode="Batch" />
     </dx:ASPxGridView>
-    <script type="text/javascript">
-        function OnEndCallback(s, e) {
-        }
-    </script>
+
+    
 </asp:Content>
 

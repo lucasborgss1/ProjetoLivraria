@@ -14,21 +14,12 @@ namespace ProjetoLivraria.Livraria
     public partial class GerenciamentoAutores : System.Web.UI.Page
     {
         AutoresDAO ioAutoresDAO = new AutoresDAO();
-
-        private void CarregaDados()
+        public Autores AutoresSessao
         {
-            try
-            {
-                this.ListaAutores = this.ioAutoresDAO.BuscaAutores();
-
-                this.gvGerenciamentoAutores.DataSource = this.ListaAutores.OrderBy(loAutor => loAutor.aut_nm_nome);
-                this.gvGerenciamentoAutores.DataBind();
-            }
-            catch
-            {
-                HttpContext.Current.Response.Write("<script>alert('Falha ao tentar recuperar Autores.');</script>");
-            }
+            get { return (Autores)Session["SessionAutorSelecionado"]; }
+            set { Session["SessionAutorSelecionado"] = value; }
         }
+
 
         public BindingList<Autores> ListaAutores
         {
@@ -36,7 +27,7 @@ namespace ProjetoLivraria.Livraria
             {
                 if ((BindingList<Autores>)ViewState["ViewStateListaAutores"] == null)
                     this.CarregaDados();
-                return (BindingList<Autores>) ViewState["ViewStateListaAutores"];
+                return (BindingList<Autores>)ViewState["ViewStateListaAutores"];
             }
 
             set
@@ -47,25 +38,32 @@ namespace ProjetoLivraria.Livraria
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            CarregaDados();
+            // Evitando carga duplicada de dados.
+            if (!IsPostBack)
+            {
+                CarregaDados();
+            }      
+        }
+
+        private void CarregaDados()
+        {
+            try
+            {
+                this.ListaAutores = ioAutoresDAO.BuscaAutores();
+                this.gvGerenciamentoAutores.DataSource = ListaAutores;
+                this.gvGerenciamentoAutores.DataBind();
+            }
+            catch   
+            {
+                HttpContext.Current.Response.Write("<script>alert('Falha ao tentar recuperar Autores.');</script>");
+            }
         }
 
         protected void BtnNovoAutor_Click(object sender, EventArgs e)
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(tbxCadastroNomeAutor.Text) || string.IsNullOrWhiteSpace(tbxCadastroSobrenomeAutor.Text) || string.IsNullOrWhiteSpace(tbxCadastroEmailAutor.Text))
-                {
-                    HttpContext.Current.Response.Write("<script> alert('Preencha todos os campos obrigatórios!'); </script>");
-                    return;
-                }
-
-                if (!System.Text.RegularExpressions.Regex.IsMatch(tbxCadastroEmailAutor.Text, @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"))
-                {
-                    HttpContext.Current.Response.Write("<script> alert('Formato de e-mail inválido!'); </script>");
-                    return;
-                }
-
+                
                 //Buscando nos autores já cadastrados o que possui o maior ID, e assim incrementando mais 1, evitando que a PrimaryKey se repita.(Esse campo não é auto-increment no banco.)
                 decimal ldcIdAutor = this.ListaAutores.OrderByDescending(a => a.aut_id_autor).First().aut_id_autor + 1;
 
@@ -101,22 +99,22 @@ namespace ProjetoLivraria.Livraria
 
                 if (string.IsNullOrEmpty(nome))
                 {
-                    HttpContext.Current.Response.Write("Informe o nome do autor.");
+                    HttpContext.Current.Response.Write("<script> alert('Informe o nome do autor.'); </script>");
                     return;
                 } 
                 else if (string.IsNullOrEmpty(sobrenome))
                 {
-                    HttpContext.Current.Response.Write("Informe o sobrenome do autor.");
+                    HttpContext.Current.Response.Write("<script>alert('Informe o sobrenome do autor.');</script>");
                     return;
                 }
                 else if (string.IsNullOrEmpty(email))
                 {
-                    HttpContext.Current.Response.Write("Informe o email do autor.");
+                    HttpContext.Current.Response.Write("<script>alert('Informe o email do autor.');</script>");
                     return;
                 }
 
-                Autores autor = new Autores(autorId, nome, sobrenome, email);
-                
+                Autores autor = new Autores(autorId, nome, sobrenome, email) { };
+
                 int qtdLinhasAfetadas = ioAutoresDAO.AtualizaAutor(autor);
 
                 e.Cancel = true;
@@ -127,17 +125,70 @@ namespace ProjetoLivraria.Livraria
             }
             catch
             {
-                HttpContext.Current.Response.Write("Erro na atualização do cadastro do autor.");
+                HttpContext.Current.Response.Write("<script>alert('Erro na atualização do cadastro do autor.');</script>");
             }
         }
 
         protected void gvGerenciamentoAutores_RowDeleting(object sender, ASPxDataDeletingEventArgs e)
         {
+            try
+            {
+                decimal autorId = Convert.ToDecimal(e.Keys["aut_id_autor"]);
+                Autores loAutor = this.ioAutoresDAO.BuscaAutores(autorId).FirstOrDefault();
+                if (loAutor != null)
+                {
+                    LivrosDAO loLivrosDAO = new LivrosDAO();
+                    if (loLivrosDAO.BuscarLivrosPorAutor(loAutor).Count != 0)
+                    {
+                        HttpContext.Current.Response.Write("<script>alert('Não é possível remover o autor selecionado pois existem livros associados a ele.');</script>");
+                        e.Cancel = true;
+                    }
+                    else
+                    {
+                        this.ioAutoresDAO.RemoveAutor(autorId);
+                        this.CarregaDados();
+                        e.Cancel = true;
+                    }
+                }
+            }
+            catch
+            {
+                HttpContext.Current.Response.Write("<script>alert('Erro na remoção do autor selecionado.')</script>");
+            }
         }
 
         protected void gvGerenciamentoAutores_CustomButtonCallback(object sender, DevExpress.Web.ASPxGridViewCustomButtonCallbackEventArgs e)
         {
+            decimal autorId = Convert.ToDecimal(gvGerenciamentoAutores.GetRowValues(e.VisibleIndex, "aut_id_autor"));
+            var autor = ioAutoresDAO.BuscaAutores(autorId).FirstOrDefault();
+
+            if (e.ButtonID == "btnAutorInfo")
+            {
+
+            }
+            else if (e.ButtonID == "btnLivros")
+            {
+                Session["SessionAutorSelecionado"] = autor;
+
+                gvGerenciamentoAutores.JSProperties["cpRedirectToLivros"] = true;
+            }
+        }
+
+        private void RedirectLivros(String idAutorString, string controlID)
+        {
+            switch (controlID)
+            {
+                case "btnLivros":
+                    decimal id = Convert.ToDecimal(idAutorString);
+                    AutoresSessao = this.ioAutoresDAO.BuscaAutores(id).First();
+
+                    Response.Redirect("/Livraria/GerenciamentoLivros.aspx");
+                    break;
+                default: break;
+            }
 
         }
+
+
     }
 }
