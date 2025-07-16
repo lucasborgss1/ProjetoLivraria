@@ -37,12 +37,9 @@ namespace ProjetoLivraria.Livraria
         }
 
         protected void Page_Load(object sender, EventArgs e)
-        {
-            // Evitando carga duplicada de dados.
-            if (!IsPostBack)
-            {
+        {  
                 CarregaDados();
-            }      
+  
         }
 
         private void CarregaDados()
@@ -50,7 +47,7 @@ namespace ProjetoLivraria.Livraria
             try
             {
                 this.ListaAutores = ioAutoresDAO.BuscaAutores();
-                this.gvGerenciamentoAutores.DataSource = ListaAutores;
+                this.gvGerenciamentoAutores.DataSource = this.ListaAutores.OrderBy(loAutor => loAutor.aut_nm_nome);
                 this.gvGerenciamentoAutores.DataBind();
             }
             catch   
@@ -63,8 +60,9 @@ namespace ProjetoLivraria.Livraria
         {
             try
             {
-                
+                // Se a valid~ção da página não foi corretamente feita, o código não é executado.
                 if (!Page.IsValid) return;
+
                 //Buscando nos autores já cadastrados o que possui o maior ID, e assim incrementando mais 1, evitando que a PrimaryKey se repita.(Esse campo não é auto-increment no banco.)
                 decimal ldcIdAutor = this.ListaAutores.OrderByDescending(a => a.aut_id_autor).First().aut_id_autor + 1;
 
@@ -76,8 +74,10 @@ namespace ProjetoLivraria.Livraria
 
                 this.ioAutoresDAO.InsereAutor(loAutor);
 
-                this.CarregaDados();
                 HttpContext.Current.Response.Write("<script> alert('Autor cadastrado com sucesso!'); </script>");
+
+                // Após salvar o autor, a página é recarregada de forma limpa.
+                Response.Redirect(Request.RawUrl, false);
             }
             catch
             {
@@ -122,11 +122,10 @@ namespace ProjetoLivraria.Livraria
                 this.gvGerenciamentoAutores.CancelEdit();
 
                 CarregaDados();
-                 
             }
             catch
             {
-                HttpContext.Current.Response.Write("<script>alert('Erro na atualização do cadastro do autor.');</script>");
+                HttpContext.Current.Response.Write("<script>alert('Erro na atualização do autor.');</script>");
             }
         }
 

@@ -79,7 +79,7 @@
         OnRowDeleting="gvGerenciamentoAutores_RowDeleting"
         OnCustomButtonCallback="gvGerenciamentoAutores_CustomButtonCallback">
         <ClientSideEvents EndCallback="OnEndCallback" />
-        
+        <Settings ShowFilterRow="True"/>
         
 
         <Columns>
