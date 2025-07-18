@@ -76,8 +76,9 @@ namespace ProjetoLivraria.DAO
             return liQtdRegistrosInseridos;
         }
 
-        public int RemoveAutor(decimal idAutor)
+        public int RemoveAutor(Autores aoAutor)
         {
+            if (aoAutor == null) throw new NullReferenceException();
             int liQtdRegistrosInseridos = 0;
             using (ioConexao = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnectionString"].ConnectionString))
             {
@@ -85,7 +86,7 @@ namespace ProjetoLivraria.DAO
                 {
                     ioConexao.Open();
                     ioQuery = new SqlCommand("DELETE FROM AUT_AUTORES WHERE AUT_ID_AUTOR = @idAutor", ioConexao);
-                    ioQuery.Parameters.Add(new SqlParameter("@idAutor", idAutor));
+                    ioQuery.Parameters.Add(new SqlParameter("@idAutor", aoAutor.aut_id_autor));
                     liQtdRegistrosInseridos = ioQuery.ExecuteNonQuery();
                 }
                 catch
