@@ -88,7 +88,7 @@ namespace ProjetoLivraria.DAO
                 try
                 {
                     ioConexao.Open();
-                    ioQuery = new SqlCommand("DELETE FROM EDI_EDITORES WHERE LIV_ID_LIVRO = @idEditor", ioConexao);
+                    ioQuery = new SqlCommand("DELETE FROM EDI_EDITORES WHERE EDI_ID_EDITOR = @idEditor", ioConexao);
                     ioQuery.Parameters.Add(new SqlParameter("@idEditor", aoEditor.edi_id_editor));
                     liQtdRegistrosInseridos = ioQuery.ExecuteNonQuery();
                 }
