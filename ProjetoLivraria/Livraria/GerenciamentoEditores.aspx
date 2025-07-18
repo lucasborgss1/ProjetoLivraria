@@ -2,10 +2,17 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     <script>
         function OnEndCallback(s, e) {
+            if (s.cpRedirectToLivros) {
+                window.location.href = '/Livraria/GerenciamentoLivros.aspx';
+            }
         }
 
         function OnSalvarEditorClick(s, e) {
-
+            if (!ASPxClientEdit.ValidateGroup('MyGroup')) {
+                e.processOnServer = false;
+            } else {
+                e.processOnServer = true;
+            }
         }
     </script>
      <dx:ASPxFormLayout ID="ASPxFormLayout1" runat="server" Width="100%" Theme="Office365">
@@ -66,7 +73,10 @@
         </Items>
     </dx:ASPxFormLayout>
 
-    <dx:ASPxGridView ID="gvGerenciamentoEditores" runat="server" ShowInsert="True" AllowEditing="True" Width="100%" KeyFieldName="edi_id_editor">
+    <dx:ASPxGridView ID="gvGerenciamentoEditores" runat="server" ShowInsert="True" AllowEditing="True" Width="100%" KeyFieldName="edi_id_editor"
+        OnRowUpdating="gvGerenciamentoEditores_RowUpdating"
+        OnRowDeleting="gvGerenciamentoEditores_RowDeleting"
+        OnCustomButtonCallback="gvGerenciamentoEditores_CustomButtonCallback">
         <ClientSideEvents EndCallback="OnEndCallback" />
         <Settings ShowFilterRow="True"/>
         
