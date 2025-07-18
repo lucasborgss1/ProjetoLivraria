@@ -80,6 +80,66 @@ namespace ProjetoLivraria.DAO
             return loListLivros;
         }
 
+        public BindingList<Livros> BuscarLivrosPorEditor(Editores adcEditor)
+        {
+            BindingList<Livros> loListLivros = new BindingList<Livros>();
+
+            using (ioConexao = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnectionString"].ConnectionString))
+            {
+                try
+                {
+                    ioConexao.Open();
+                    ioQuery = new SqlCommand("SELECT * FROM LIV_LIVROS  WHERE LIV_ID_EDITOR = @idEditor", ioConexao);
+                    ioQuery.Parameters.Add(new SqlParameter("@idEditor", adcEditor.edi_id_editor));
+
+                    using (SqlDataReader loReader = ioQuery.ExecuteReader())
+                    {
+                        while (loReader.Read())
+                        {
+                            Livros loNovoLivro = new Livros(loReader.GetDecimal(0), loReader.GetDecimal(1), loReader.GetDecimal(2), loReader.GetString(3), loReader.GetDecimal(4), loReader.GetDecimal(5), loReader.GetString(6), loReader.GetInt32(7));
+                            loListLivros.Add(loNovoLivro);
+                        }
+                        loReader.Close();
+                    }
+                }
+                catch
+                {
+                    throw new Exception("Erro ao tentar buscar o(s) livro(s).");
+                }
+            }
+            return loListLivros;
+        }
+
+        public BindingList<Livros> BuscarLivrosPorCategoria(TiposLivro adcTipoLivro)
+        {
+            BindingList<Livros> loListLivros = new BindingList<Livros>();
+
+            using (ioConexao = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnectionString"].ConnectionString))
+            {
+                try
+                {
+                    ioConexao.Open();
+                    ioQuery = new SqlCommand("SELECT * FROM LIV_LIVROS WHERE LIV_ID_TIPO_LIVRO = @idTipoLivro", ioConexao);
+                    ioQuery.Parameters.Add(new SqlParameter("@idTipoLivro", adcTipoLivro.til_id_tipo_livro));
+
+                    using (SqlDataReader loReader = ioQuery.ExecuteReader())
+                    {
+                        while (loReader.Read())
+                        {
+                            Livros loNovoLivro = new Livros(loReader.GetDecimal(0), loReader.GetDecimal(1), loReader.GetDecimal(2), loReader.GetString(3), loReader.GetDecimal(4), loReader.GetDecimal(5), loReader.GetString(6), loReader.GetInt32(7));
+                            loListLivros.Add(loNovoLivro);
+                        }
+                        loReader.Close();
+                    }
+                }
+                catch
+                {
+                    throw new Exception("Erro ao tentar buscar o(s) livro(s).");
+                }
+            }
+            return loListLivros;
+        }
+
         public int InsereLivro(Livros aoNovoLivro)
         {
             if (aoNovoLivro == null) throw new NullReferenceException();
