@@ -13,7 +13,13 @@ namespace ProjetoLivraria.Models
         public string aut_nm_nome { get; set; }
         public string aut_nm_sobrenome { get; set; }
         public string aut_ds_email { get; set; }
-         
+
+        public string aut_nome_completo
+        {
+            get { return $"{aut_nm_nome} {aut_nm_sobrenome}"; }
+        }
+
+
         public Autores(decimal adcIdAutor, string asNomeAutor, string asSobrenomeAutor, string asEmailAutor)
         {
             this.aut_id_autor = adcIdAutor;
