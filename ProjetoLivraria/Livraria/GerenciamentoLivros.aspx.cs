@@ -1,6 +1,7 @@
 ﻿using DevExpress.Web;
 using DevExpress.Web.Data;
 using ProjetoLivraria.DAO;
+using ProjetoLivraria.DTO;
 using ProjetoLivraria.Models;
 using System;
 using System.Collections.Generic;
@@ -20,13 +21,13 @@ namespace ProjetoLivraria.Livraria
         EditoresDAO ioEditoresDAO = new EditoresDAO();
         LivrosEAutoresDAO ioLivrosEAutoresDAO = new LivrosEAutoresDAO();
 
-        public BindingList<Livros> ListaLivros
+        public BindingList<LivrosDTO> ListaLivros
         {
             get
             {
-                if ((BindingList<Livros>)ViewState["ViewStateListaLivros"] == null)
+                if ((BindingList<LivrosDTO>)ViewState["ViewStateListaLivros"] == null)
                     CarregaDados();
-                return (BindingList<Livros>)ViewState["ViewStateListaLivros"];
+                return (BindingList<LivrosDTO>)ViewState["ViewStateListaLivros"];
             }
 
             set
@@ -80,6 +81,21 @@ namespace ProjetoLivraria.Livraria
             }
         }
 
+        public BindingList<LivrosEAutores> ListaLivrosEAutores
+        {
+            get
+            {
+                if ((BindingList<LivrosEAutores>)ViewState["ViewStateListaLivrosEAutores"] == null)
+                    this.CarregaDados();
+                return (BindingList<LivrosEAutores>)ViewState["ViewStateListaLivrosEAutores"];
+            }
+
+            set
+            {
+                ViewState["ViewStateListaLivrosEAutores"] = value;
+            }
+        }
+
         protected void Page_Load(object sender, EventArgs e)
         {
             CarregaDados();
@@ -89,10 +105,6 @@ namespace ProjetoLivraria.Livraria
         {
             try
             {
-                this.ListaLivros = ioLivrosDAO.BuscaLivros();
-                this.gvGerenciamentoLivros.DataSource = this.ListaLivros.OrderBy(loLivro => loLivro.liv_nm_titulo);
-                this.gvGerenciamentoLivros.DataBind();
-
                 this.ListaTiposLivro = ioTiposLivroDAO.BuscaTiposLivro();
                 this.cbCadastroCategoria.DataSource = this.ListaTiposLivro.OrderBy(loTipoLivro => loTipoLivro.til_ds_descricao);
                 this.cbCadastroCategoria.TextField = "til_ds_descricao";
@@ -111,18 +123,34 @@ namespace ProjetoLivraria.Livraria
                 this.cbCadastroEditorLivro.TextField = "edi_nm_editor";
                 this.cbCadastroEditorLivro.ValueField = "edi_id_editor";
                 this.cbCadastroEditorLivro.DataBind();
+
+
+                this.ListaLivros = ioLivrosDAO.BuscaLivrosDTO();
+                this.gvGerenciamentoLivros.DataSource = this.ListaLivros.OrderBy(loLivro => loLivro.liv_nm_titulo);
+                
+
+                GridViewDataComboBoxColumn autorCol = (GridViewDataComboBoxColumn)gvGerenciamentoLivros.Columns["aut_id_autor"];
+                autorCol.PropertiesComboBox.DataSource = this.ListaAutores;
+                autorCol.PropertiesComboBox.ValueField = "aut_id_autor";
+                autorCol.PropertiesComboBox.TextField = "aut_nome_completo";
+
+                GridViewDataComboBoxColumn editorCol = (GridViewDataComboBoxColumn)gvGerenciamentoLivros.Columns["edi_id_editor"];
+                editorCol.PropertiesComboBox.DataSource = this.ListaEditores;
+                editorCol.PropertiesComboBox.ValueField = "edi_id_editor";
+                editorCol.PropertiesComboBox.TextField = "edi_nm_editor";
+
+                GridViewDataComboBoxColumn categoriaCol = (GridViewDataComboBoxColumn)gvGerenciamentoLivros.Columns["til_id_tipo_livro"];
+                categoriaCol.PropertiesComboBox.DataSource = this.ListaTiposLivro;
+                categoriaCol.PropertiesComboBox.ValueField = "til_id_tipo_livro";
+                categoriaCol.PropertiesComboBox.TextField = "til_ds_descricao";
+
+                this.gvGerenciamentoLivros.DataBind();
             }
             catch (Exception e)
             {
-                HttpContext.Current.Response.Write("<script>alert('Falha ao tentar recuperar dados.')</script>" + e);
+                HttpContext.Current.Response.Write("<script>alert('Falha ao tentar recuperar dados.')</script>" + e.Message);
             }
         }
-
-        
-
-
-
-
 
         protected void BtnNovoLivro_Click(object sender, EventArgs e)
         {
@@ -153,76 +181,99 @@ namespace ProjetoLivraria.Livraria
             {
                 HttpContext.Current.Response.Write("<script> alert('Erro no cadastrado do Autor!'); </script>");
             }
-
             LimparFormulario();
         }
 
         protected void gvGerenciamentoLivros_RowUpdating(object sender, ASPxDataUpdatingEventArgs e)
         {
-            //try
-            //{
-            //    decimal autorId = Convert.ToDecimal(e.Keys["aut_id_autor"]);
-            //    string nome = e.NewValues["aut_nm_nome"].ToString();
-            //    string sobrenome = e.NewValues["aut_nm_sobrenome"].ToString();
-            //    string email = e.NewValues["aut_ds_email"].ToString();
+            try
+            {
 
-            //    if (string.IsNullOrEmpty(nome))
-            //    {
-            //        HttpContext.Current.Response.Write("<script> alert('Informe o nome do autor.'); </script>");
-            //        return;
-            //    }
-            //    else if (string.IsNullOrEmpty(sobrenome))
-            //    {
-            //        HttpContext.Current.Response.Write("<script>alert('Informe o sobrenome do autor.');</script>");
-            //        return;
-            //    }
-            //    else if (string.IsNullOrEmpty(email))
-            //    {
-            //        HttpContext.Current.Response.Write("<script>alert('Informe o email do autor.');</script>");
-            //        return;
-            //    }
-            //    Autores autor = new Autores(autorId, nome, sobrenome, email);
+                decimal livroId = Convert.ToDecimal(e.Keys["liv_id_livro"]);
+                decimal idCategoria = Convert.ToDecimal(e.NewValues["til_id_tipo_livro"]);
+                decimal idEditor = Convert.ToDecimal(e.NewValues["edi_id_editor"]);
+                string titulo = e.NewValues["liv_nm_titulo"].ToString();
+                decimal preco = Convert.ToDecimal(e.NewValues["liv_vl_preco"]);
+                decimal royalty = Convert.ToDecimal(e.NewValues["liv_pc_royalty"]);
+                string resumo = e.NewValues["liv_ds_resumo"].ToString();
+                int edicao = Convert.ToInt32(e.NewValues["liv_nu_edicao"]);
+                decimal idAutor = Convert.ToDecimal(e.NewValues["aut_id_autor"]);
 
-            //    int qtdLinhasAfetadas = ioAutoresDAO.AtualizaAutor(autor);
+                if (string.IsNullOrEmpty(idCategoria.ToString()))
+                {
+                    HttpContext.Current.Response.Write("<script>alert('Informe a categoria do livro.');</script>");
+                    return;
+                }
+                else if (string.IsNullOrEmpty(idEditor.ToString()))
+                {
+                    HttpContext.Current.Response.Write("<script>alert('Informe o editor do livro.');</script>");
+                    return;
+                }
+                else if (string.IsNullOrEmpty(titulo))
+                {
+                    HttpContext.Current.Response.Write("<script>alert('Informe o titulo do livro.');</script>");
+                    return;
+                }
+                else if (string.IsNullOrEmpty(preco.ToString()))
+                {
+                    HttpContext.Current.Response.Write("<script>alert('Informe o preço do livro.');</script>");
+                    return;
+                }
+                else if (string.IsNullOrEmpty(royalty.ToString()))
+                {
+                    HttpContext.Current.Response.Write("<script>alert('Informe o royalty do livro.');</script>");
+                    return;
+                }
+                else if (string.IsNullOrEmpty(resumo))
+                {
+                    HttpContext.Current.Response.Write("<script>alert('Informe o resumo do livro.');</script>");
+                    return;
+                }
+                else if (string.IsNullOrEmpty(edicao.ToString()))
+                {
+                    HttpContext.Current.Response.Write("<script>alert('Informe a edicao do livro.');</script>");
+                    return;
+                }
+                else if (string.IsNullOrEmpty(idAutor.ToString()))
+                {
+                    HttpContext.Current.Response.Write("<script>alert('Informe o autor do livro.');</script>");
+                    return;
+                }
 
-            //    e.Cancel = true;
-            //    this.gvGerenciamentoAutores.CancelEdit();
-            //    CarregaDados();
-            //}
-            //catch
-            //{
-            //    e.Cancel = true;
-            //    HttpContext.Current.Response.Write("<script>alert('Erro na atualização do autor.');</script>");
-            //}
+                Livros livro = new Livros(livroId, idCategoria, idEditor, titulo, preco, royalty, resumo, edicao);
+
+                int qtdLinhasAfetadas = ioLivrosDAO.AtualizaLivro(livro);
+
+                e.Cancel = true;
+                this.gvGerenciamentoLivros.CancelEdit();
+                CarregaDados();
+            }
+            catch
+            {
+                e.Cancel = true;
+                HttpContext.Current.Response.Write("<script>alert('Erro na atualização do livro.');</script>");
+            }
         }
 
         protected void gvGerenciamentoLivros_RowDeleting(object sender, ASPxDataDeletingEventArgs e)
         {
-            //try
-            //{
-            //    decimal autorId = Convert.ToDecimal(e.Keys["aut_id_autor"]);
-            //    Autores loAutor = this.ioAutoresDAO.BuscaAutores(autorId).FirstOrDefault();
-            //    if (loAutor != null)
-            //    {
-            //        LivrosDAO loLivrosDAO = new LivrosDAO();
-            //        if (loLivrosDAO.BuscarLivrosPorAutor(loAutor).Count != 0)
-            //        {
-            //            HttpContext.Current.Response.Write("<script>alert('Não é possível remover o autor selecionado pois existem livros associados a ele.');</script>");
-            //            e.Cancel = true;
-            //        }
-            //        else
-            //        {
-            //            this.ioAutoresDAO.RemoveAutor(loAutor);
-            //            e.Cancel = true;
-            //            CarregaDados();
-            //        }
-            //    }
-            //}
-            //catch
-            //{
-            //    e.Cancel = true;
-            //    HttpContext.Current.Response.Write("<script>alert('Erro na remoção do autor selecionado.')</script>");
-            //}
+            try
+            {
+                decimal ldcIdLivro = Convert.ToDecimal(e.Keys["liv_id_livro"]);
+                Livros loLivro = this.ioLivrosDAO.BuscaLivros(ldcIdLivro).FirstOrDefault();
+                LivrosEAutores loLivroEAutor = this.ioLivrosEAutoresDAO.BuscaLivrosEAutores(adcIdLivro: ldcIdLivro).FirstOrDefault();
+                if (loLivro != null && loLivroEAutor != null)
+                {
+                    this.ioLivrosDAO.RemoveLivro(loLivro);
+                    this.ioLivrosEAutoresDAO.RemoveLivroEAutor(loLivroEAutor);
+                    e.Cancel = true;
+                    CarregaDados();
+                }
+            }
+            catch (Exception ex)
+            {
+                HttpContext.Current.Response.Write("<script> alert('Erro no cadastrado do Autor!'); </script>" + ex.Message);
+            }
         }
 
         private void LimparFormulario()

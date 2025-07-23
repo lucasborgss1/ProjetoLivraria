@@ -1,4 +1,5 @@
-﻿using ProjetoLivraria.Models;
+﻿using ProjetoLivraria.DTO;
+using ProjetoLivraria.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -38,6 +39,68 @@ namespace ProjetoLivraria.DAO
                         {
                             Livros loNovoLivro = new Livros(loReader.GetDecimal(0), loReader.GetDecimal(1), loReader.GetDecimal(2), loReader.GetString(3), loReader.GetDecimal(4), loReader.GetDecimal(5), loReader.GetString(6), loReader.GetInt32(7));
                             loListLivros.Add(loNovoLivro);
+                        }
+                        loReader.Close();
+                    }
+                }
+                catch
+                {
+                    throw new Exception("Erro ao tentar buscar o(s) livro(s).");
+                }
+            }
+            return loListLivros;
+        }
+
+        public BindingList<LivrosDTO> BuscaLivrosDTO()
+        {
+            BindingList<LivrosDTO> loListLivros = new BindingList<LivrosDTO>();
+
+            using (ioConexao = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnectionString"].ConnectionString))
+            {
+                try
+                {
+                    ioConexao.Open();
+                    ioQuery = new SqlCommand(
+                        "SELECT " +
+                        "liv.LIV_ID_LIVRO, " +
+                        "liv.LIV_ID_TIPO_LIVRO, " +
+                        "liv.LIV_ID_EDITOR, " +
+                        "liv.LIV_NM_TITULO, " +
+                        "liv.LIV_VL_PRECO, " +
+                        "liv.LIV_PC_ROYALTY, " +
+                        "liv.LIV_DS_RESUMO, " +
+                        "liv.LIV_NU_EDICAO, " +
+                        "lia.LIA_ID_AUTOR, " +
+                        "aut.AUT_NM_NOME, " +
+                        "aut.AUT_NM_SOBRENOME, " +
+                        "edi.EDI_NM_EDITOR, " +
+                        "tip.TIL_DS_DESCRICAO " +
+                        "FROM LIV_LIVROS liv " +
+                        "LEFT JOIN LIA_LIVRO_AUTOR lia ON liv.LIV_ID_LIVRO = lia.LIA_ID_LIVRO " +
+                        "LEFT JOIN AUT_AUTORES aut ON lia.LIA_ID_AUTOR = aut.AUT_ID_AUTOR " +
+                        "LEFT JOIN EDI_EDITORES edi ON liv.LIV_ID_EDITOR = edi.EDI_ID_EDITOR " +
+                        "LEFT JOIN TIL_TIPO_LIVRO tip ON liv.LIV_ID_TIPO_LIVRO = tip.TIL_ID_TIPO_LIVRO", ioConexao);
+
+
+                    using (SqlDataReader loReader = ioQuery.ExecuteReader())
+                    {
+                        while (loReader.Read())
+                        {
+                            LivrosDTO loNovoLivroDTO = new LivrosDTO(
+                                loReader.GetDecimal(0), 
+                                loReader.GetDecimal(1),
+                                loReader.GetDecimal(2),
+                                loReader.GetString(3), 
+                                loReader.GetDecimal(4), 
+                                loReader.GetDecimal(5),
+                                loReader.GetString(6),
+                                loReader.GetInt32(7), 
+                                loReader.IsDBNull(8) ? -1 : loReader.GetDecimal(8),
+                                loReader.IsDBNull(9) ? null : loReader.GetString(9),
+                                loReader.IsDBNull(10) ? null : loReader.GetString(10),
+                                loReader.IsDBNull(11) ? null : loReader.GetString(11), 
+                                loReader.IsDBNull(12) ? null : loReader.GetString(12));
+                            loListLivros.Add(loNovoLivroDTO);
                         }
                         loReader.Close();
                     }
@@ -180,7 +243,7 @@ namespace ProjetoLivraria.DAO
                 {
                     ioConexao.Open();
                     ioQuery = new SqlCommand("DELETE FROM LIV_LIVROS WHERE LIV_ID_LIVRO = @idLivro", ioConexao);
-                    ioQuery.Parameters.Add(new SqlParameter("@idAutor", aoLivro.liv_id_livro));
+                    ioQuery.Parameters.Add(new SqlParameter("@idLivro", aoLivro.liv_id_livro));
                     liQtdRegistrosInseridos = ioQuery.ExecuteNonQuery();
                 }
                 catch
@@ -220,6 +283,6 @@ namespace ProjetoLivraria.DAO
             return liQtdRegistrosInseridos;
         }
 
-       
+
     }
 }

@@ -143,13 +143,13 @@
         <Settings ShowFilterRow="True" />
 
         <Columns>
-
             <dx:GridViewDataTextColumn FieldName="liv_id_livro" Caption="ID" Visible="false" />
             <dx:GridViewDataTextColumn PropertiesTextEdit-MaxLength="20" FieldName="liv_nm_titulo" Caption="Título" />
+            <dx:GridViewDataComboBoxColumn FieldName="aut_id_autor" Caption="Autor" Name="aut_id_autor" />
+            <dx:GridViewDataComboBoxColumn FieldName="edi_id_editor" Caption="Editor" Name="edi_id_editor"/>
             <dx:GridViewDataTextColumn FieldName="liv_vl_preco" Caption="Preço" />
             <dx:GridViewDataTextColumn FieldName="liv_nu_edicao" Caption="Edição" />
-            <dx:GridViewDataTextColumn PropertiesTextEdit-MaxLength="15" FieldName="liv_id_editor" Caption="Editor" />
-            <dx:GridViewDataTextColumn PropertiesTextEdit-MaxLength="15" FieldName="liv_id_tipo_livro" Caption="Categoria" />
+            <dx:GridViewDataComboBoxColumn FieldName="til_id_tipo_livro" Caption="Categoria" Name="til_id_tipo_livro" />
             <dx:GridViewDataTextColumn FieldName="liv_pc_royalty" Caption="Royalty (%)" />
             <dx:GridViewDataTextColumn PropertiesTextEdit-MaxLength="100" FieldName="liv_ds_resumo" Caption="Resumo" />
 
