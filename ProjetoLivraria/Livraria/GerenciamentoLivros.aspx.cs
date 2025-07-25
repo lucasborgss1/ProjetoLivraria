@@ -21,6 +21,25 @@ namespace ProjetoLivraria.Livraria
         EditoresDAO ioEditoresDAO = new EditoresDAO();
         LivrosEAutoresDAO ioLivrosEAutoresDAO = new LivrosEAutoresDAO();
 
+
+        public TiposLivro TiposLivroSessao
+        {
+            get { return (TiposLivro)Session["SessionTiposLivroSelecionado"]; }
+            set { Session["SessionTiposLivroSelecionado"] = value; }
+        }
+
+        public Autores AutoresSessao
+        {
+            get { return (Autores)Session["SessionAutorSelecionado"]; }
+            set { Session["SessionAutorSelecionado"] = value; }
+        }
+
+        public Editores EditoresSessao
+        {
+            get { return (Editores)Session["SessionEditorSelecionado"]; }
+            set { Session["SessionEditorSelecionado"] = value; }
+        }
+
         public BindingList<LivrosDTO> ListaLivros
         {
             get
@@ -150,7 +169,6 @@ namespace ProjetoLivraria.Livraria
                 {
                     throw new Exception("IDs duplicados encontrados: " + string.Join(", ", duplicados));
                 }
-
 
                 this.gvGerenciamentoLivros.DataBind();
             }
