@@ -127,7 +127,7 @@ namespace ProjetoLivraria.Livraria
 
                 this.ListaLivros = ioLivrosDAO.BuscaLivrosDTO();
                 this.gvGerenciamentoLivros.DataSource = this.ListaLivros.OrderBy(loLivro => loLivro.liv_nm_titulo);
-                
+
 
                 GridViewDataComboBoxColumn autorCol = (GridViewDataComboBoxColumn)gvGerenciamentoLivros.Columns["aut_id_autor"];
                 autorCol.PropertiesComboBox.DataSource = this.ListaAutores;
@@ -143,6 +143,14 @@ namespace ProjetoLivraria.Livraria
                 categoriaCol.PropertiesComboBox.DataSource = this.ListaTiposLivro;
                 categoriaCol.PropertiesComboBox.ValueField = "til_id_tipo_livro";
                 categoriaCol.PropertiesComboBox.TextField = "til_ds_descricao";
+
+                var duplicados = ListaLivros.GroupBy(l => l.liv_id_livro).Where(g => g.Count() > 1).Select(g => g.Key).ToList();
+
+                if (duplicados.Any())
+                {
+                    throw new Exception("IDs duplicados encontrados: " + string.Join(", ", duplicados));
+                }
+
 
                 this.gvGerenciamentoLivros.DataBind();
             }
@@ -175,6 +183,8 @@ namespace ProjetoLivraria.Livraria
                 LivrosEAutores loLeA = new LivrosEAutores(ldcIdAutor, ldcIdLivro, lsRoyalty);
                 this.ioLivrosEAutoresDAO.InsereLivroEAutores(loLeA);
 
+                CarregaDados();
+
                 HttpContext.Current.Response.Write("<script> alert('Livro cadastrado com sucesso!'); </script>");
             }
             catch
@@ -188,8 +198,9 @@ namespace ProjetoLivraria.Livraria
         {
             try
             {
-
-                decimal livroId = Convert.ToDecimal(e.Keys["liv_id_livro"]);
+                decimal idLivro = Convert.ToDecimal(e.Keys["liv_id_livro"]);
+                int visibleIndex = gvGerenciamentoLivros.FindVisibleIndexByKeyValue(idLivro);
+                decimal idAutor = Convert.ToDecimal(gvGerenciamentoLivros.GetRowValues(visibleIndex, "aut_id_autor"));
                 decimal idCategoria = Convert.ToDecimal(e.NewValues["til_id_tipo_livro"]);
                 decimal idEditor = Convert.ToDecimal(e.NewValues["edi_id_editor"]);
                 string titulo = e.NewValues["liv_nm_titulo"].ToString();
@@ -197,7 +208,6 @@ namespace ProjetoLivraria.Livraria
                 decimal royalty = Convert.ToDecimal(e.NewValues["liv_pc_royalty"]);
                 string resumo = e.NewValues["liv_ds_resumo"].ToString();
                 int edicao = Convert.ToInt32(e.NewValues["liv_nu_edicao"]);
-                decimal idAutor = Convert.ToDecimal(e.NewValues["aut_id_autor"]);
 
                 if (string.IsNullOrEmpty(idCategoria.ToString()))
                 {
@@ -240,9 +250,11 @@ namespace ProjetoLivraria.Livraria
                     return;
                 }
 
-                Livros livro = new Livros(livroId, idCategoria, idEditor, titulo, preco, royalty, resumo, edicao);
+                Livros livro = new Livros(idLivro, idCategoria, idEditor, titulo, preco, royalty, resumo, edicao);
+                LivrosEAutores lEA = new LivrosEAutores(idAutor, idLivro, royalty);
 
                 int qtdLinhasAfetadas = ioLivrosDAO.AtualizaLivro(livro);
+                qtdLinhasAfetadas += ioLivrosEAutoresDAO.AtualizaLivroEAutor(lEA);
 
                 e.Cancel = true;
                 this.gvGerenciamentoLivros.CancelEdit();
@@ -260,15 +272,18 @@ namespace ProjetoLivraria.Livraria
             try
             {
                 decimal ldcIdLivro = Convert.ToDecimal(e.Keys["liv_id_livro"]);
+                int visibleIndex = gvGerenciamentoLivros.FindVisibleIndexByKeyValue(ldcIdLivro);
+                decimal ldcIdAutor = Convert.ToDecimal(gvGerenciamentoLivros.GetRowValues(visibleIndex, "aut_id_autor"));
                 Livros loLivro = this.ioLivrosDAO.BuscaLivros(ldcIdLivro).FirstOrDefault();
-                LivrosEAutores loLivroEAutor = this.ioLivrosEAutoresDAO.BuscaLivrosEAutores(adcIdLivro: ldcIdLivro).FirstOrDefault();
-                if (loLivro != null && loLivroEAutor != null)
-                {
-                    this.ioLivrosDAO.RemoveLivro(loLivro);
-                    this.ioLivrosEAutoresDAO.RemoveLivroEAutor(loLivroEAutor);
-                    e.Cancel = true;
-                    CarregaDados();
-                }
+            
+
+                this.ioLivrosDAO.RemoveLivro(loLivro);
+                this.ioLivrosEAutoresDAO.RemoveLivroEAutor(ldcIdAutor, ldcIdLivro);
+
+                HttpContext.Current.Response.Write("<script>alert('Livro removido com sucesso.');</script>");
+
+                e.Cancel = true;
+                CarregaDados();
             }
             catch (Exception ex)
             {

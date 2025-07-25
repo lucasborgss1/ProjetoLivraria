@@ -2,9 +2,7 @@
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     <script> 
-        function OnEndCallback(s, e) {
 
-        }
 
         function OnSalvarLivroClick(s, e) {
             if (!ASPxClientEdit.ValidateGroup('MyGroup')) {
@@ -139,7 +137,6 @@
     <dx:ASPxGridView ID="gvGerenciamentoLivros" runat="server" ShowInsert="True" AllowEditing="True" Width="100%" KeyFieldName="liv_id_livro"
         OnRowUpdating="gvGerenciamentoLivros_RowUpdating"
         OnRowDeleting="gvGerenciamentoLivros_RowDeleting">
-        <ClientSideEvents EndCallback="OnEndCallback" />
         <Settings ShowFilterRow="True" />
 
         <Columns>
