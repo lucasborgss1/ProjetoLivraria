@@ -14,7 +14,7 @@ namespace ProjetoLivraria.DAO
         SqlCommand ioQuery;
         SqlConnection ioConexao;
 
-        public BindingList<LivrosEAutores> BuscaLivrosEAutores(decimal? adcIdLivro = null, decimal? adcIdAutor = null)
+        public BindingList<LivrosEAutores> BuscaLivrosEAutores(decimal? adcIdLivro, decimal? adcIdAutor)
         {
             BindingList<LivrosEAutores> loListLivrosEAutores = new BindingList<LivrosEAutores>();
 
@@ -28,16 +28,6 @@ namespace ProjetoLivraria.DAO
                         ioQuery = new SqlCommand("SELECT * FROM LIA_LIVRO_AUTOR WHERE LIA_ID_AUTOR = @idAutor AND LIA_ID_LIVRO = @idLivro", ioConexao);
                         ioQuery.Parameters.Add(new SqlParameter("@idAutor", adcIdAutor));
                         ioQuery.Parameters.Add(new SqlParameter("@idLivro", adcIdLivro));
-                    }
-                    else if (adcIdLivro != null)
-                    {
-                        ioQuery = new SqlCommand("SELECT * FROM LIA_LIVRO_AUTOR WHERE LIA_ID_LIVRO = @idLivro", ioConexao);
-                        ioQuery.Parameters.Add(new SqlParameter("@idLivro", adcIdLivro));
-                    }
-                    else if (adcIdAutor != null)
-                    {
-                        ioQuery = new SqlCommand("SELECT * FROM LIA_LIVRO_AUTOR WHERE LIA_ID_AUTOR = @idAutor", ioConexao);
-                        ioQuery.Parameters.Add(new SqlParameter("@idAutor", adcIdAutor));
                     }
                     else
                     {
@@ -87,23 +77,22 @@ namespace ProjetoLivraria.DAO
             return liQtdRegistrosInseridos;
         }
 
-        public int RemoveLivroEAutor(LivrosEAutores aoLivroEAutor)
+        public int RemoveLivroEAutor(decimal asIdAutor, decimal asIdLivro)
         {
-            if (aoLivroEAutor == null) throw new NullReferenceException();
             int liQtdRegistrosInseridos = 0;
             using (ioConexao = new SqlConnection(ConfigurationManager.ConnectionStrings["ConnectionString"].ConnectionString))
             {
                 try
                 {
                     ioConexao.Open();
-                    ioQuery = new SqlCommand("DELETE FROM LIA_LIVRO_AUTOR WHERE LIA_ID_AUTOR = @idAutor AND LIA_ID_LIVRO = @idLivro", ioConexao);
-                    ioQuery.Parameters.Add(new SqlParameter("@idAutor", aoLivroEAutor.lia_id_autor));
-                    ioQuery.Parameters.Add(new SqlParameter("@idLivro", aoLivroEAutor.lia_id_livro));
+                    ioQuery = new SqlCommand("DELETE FROM LIA_LIVRO_AUTOR WHERE LIA_ID_AUTOR = @idAutor AND LIA_ID_LIVRO", ioConexao);
+                    ioQuery.Parameters.Add(new SqlParameter("@idAutor", asIdAutor));
+                    ioQuery.Parameters.Add(new SqlParameter("@idLivro", asIdLivro));
                     liQtdRegistrosInseridos = ioQuery.ExecuteNonQuery();
                 }
-                catch
+                catch (Exception ex)
                 {
-                    throw new Exception("Erro ao tentar excluir registro de livro e autor.");
+                    throw new Exception("Erro ao tentar excluir registro de livro e autor.", ex);
                 }
             }
             return liQtdRegistrosInseridos;
@@ -118,12 +107,11 @@ namespace ProjetoLivraria.DAO
                 try
                 {
                     ioConexao.Open();
-                    ioQuery = new SqlCommand("UPDATE LIA_LIVRO_AUTOR SET LIA_ID_AUTOR = @idAutor, LIA_ID_LIVRO = @idLivro, LIA_PC_ROYALTY = @royalty WHERE LIA_ID_AUTOR = @idAutor AND LIA_ID_LIVRO = @idLivro", ioConexao);
+                    ioQuery = new SqlCommand("UPDATE LIA_LIVRO_AUTOR SET LIA_ID_AUTOR = @idAutor, LIA_PC_ROYALTY = @royalty WHERE LIA_ID_LIVRO = @idLivro", ioConexao);
                     ioQuery.Parameters.Add(new SqlParameter("@idAutor", aoLivroEAutor.lia_id_autor));
                     ioQuery.Parameters.Add(new SqlParameter("@idLivro", aoLivroEAutor.lia_id_livro));
                     ioQuery.Parameters.Add(new SqlParameter("@royalty", aoLivroEAutor.lia_pc_royalty));
                     liQtdRegistrosInseridos = ioQuery.ExecuteNonQuery();
-                   
                 }
                 catch
                 {
