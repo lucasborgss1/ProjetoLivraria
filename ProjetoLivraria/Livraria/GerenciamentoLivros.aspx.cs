@@ -279,9 +279,6 @@ namespace ProjetoLivraria.Livraria
 
                 this.ioLivrosDAO.RemoveLivro(loLivro);
                 this.ioLivrosEAutoresDAO.RemoveLivroEAutor(ldcIdAutor, ldcIdLivro);
-
-                HttpContext.Current.Response.Write("<script>alert('Livro removido com sucesso.');</script>");
-
                 e.Cancel = true;
                 CarregaDados();
             }

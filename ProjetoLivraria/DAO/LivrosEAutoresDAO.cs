@@ -85,7 +85,7 @@ namespace ProjetoLivraria.DAO
                 try
                 {
                     ioConexao.Open();
-                    ioQuery = new SqlCommand("DELETE FROM LIA_LIVRO_AUTOR WHERE LIA_ID_AUTOR = @idAutor AND LIA_ID_LIVRO", ioConexao);
+                    ioQuery = new SqlCommand("DELETE FROM LIA_LIVRO_AUTOR WHERE LIA_ID_AUTOR = @idAutor AND LIA_ID_LIVRO = @idLivro", ioConexao);
                     ioQuery.Parameters.Add(new SqlParameter("@idAutor", asIdAutor));
                     ioQuery.Parameters.Add(new SqlParameter("@idLivro", asIdLivro));
                     liQtdRegistrosInseridos = ioQuery.ExecuteNonQuery();
@@ -112,6 +112,7 @@ namespace ProjetoLivraria.DAO
                     ioQuery.Parameters.Add(new SqlParameter("@idLivro", aoLivroEAutor.lia_id_livro));
                     ioQuery.Parameters.Add(new SqlParameter("@royalty", aoLivroEAutor.lia_pc_royalty));
                     liQtdRegistrosInseridos = ioQuery.ExecuteNonQuery();
+
                 }
                 catch
                 {
