@@ -16,8 +16,9 @@
                    <Items>
                        <dx:MenuItem Text="Gerenciamento de Autores" NavigateUrl="~/Livraria/GerenciamentoAutores.aspx"/>
                        <dx:MenuItem Text="Gerenciamento de Editores" NavigateUrl="~/Livraria/GerenciamentoEditores.aspx"/>
-                       <dx:MenuItem Text="Gerenciamento de Livros" NavigateUrl="~/Livraria/GerenciamentoLivros.aspx"/>
                        <dx:MenuItem Text="Gerenciamento de Categorias" NavigateUrl="~/Livraria/GerenciamentoCategorias.aspx"/>
+                       <dx:MenuItem Text="Gerenciamento de Livros" NavigateUrl="~/Livraria/GerenciamentoLivros.aspx"/>
+                       
                    </Items>
                     <Border BorderWidth="0px" />
                     <Paddings Padding="0px" />

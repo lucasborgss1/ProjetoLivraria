@@ -84,7 +84,7 @@
 
         <Columns>
             <dx:GridViewDataTextColumn FieldName="aut_id_autor" Caption="Id" Visible="false" />
-            <dx:GridViewDataTextColumn PropertiesTextEdit-MaxLength="15" FieldName="aut_nm_nome" Caption="Nome" />
+            <dx:GridViewDataTextColumn PropertiesTextEdit-MaxLength="50" FieldName="aut_nm_nome" Caption="Nome" />
             <dx:GridViewDataTextColumn PropertiesTextEdit-MaxLength="50" FieldName="aut_nm_sobrenome" Caption="Sobrenome" />
             <dx:GridViewDataTextColumn PropertiesTextEdit-MaxLength="50" FieldName="aut_ds_email" Caption="Email" />
 

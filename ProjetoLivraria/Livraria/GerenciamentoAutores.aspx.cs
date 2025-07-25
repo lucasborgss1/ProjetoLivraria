@@ -135,6 +135,8 @@ namespace ProjetoLivraria.Livraria
                     {
                         HttpContext.Current.Response.Write("<script>alert('Não é possível remover o autor selecionado pois existem livros associados a ele.');</script>");
                         e.Cancel = true;
+                        CarregaDados();
+                      
                     }
                     else
                     {
