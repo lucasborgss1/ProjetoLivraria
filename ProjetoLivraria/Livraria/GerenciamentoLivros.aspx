@@ -149,7 +149,6 @@
             <dx:GridViewDataComboBoxColumn FieldName="til_id_tipo_livro" Caption="Categoria" Name="til_id_tipo_livro" />
             <dx:GridViewDataTextColumn FieldName="liv_pc_royalty" Caption="Royalty (%)" />
             <dx:GridViewDataTextColumn PropertiesTextEdit-MaxLength="100" FieldName="liv_ds_resumo" Caption="Resumo" />
-
             <dx:GridViewCommandColumn ShowEditButton="true" ShowDeleteButton="true" />
         </Columns>
 

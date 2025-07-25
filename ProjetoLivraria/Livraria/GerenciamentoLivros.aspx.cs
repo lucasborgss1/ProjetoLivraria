@@ -21,7 +21,6 @@ namespace ProjetoLivraria.Livraria
         EditoresDAO ioEditoresDAO = new EditoresDAO();
         LivrosEAutoresDAO ioLivrosEAutoresDAO = new LivrosEAutoresDAO();
 
-
         public TiposLivro TiposLivroSessao
         {
             get { return (TiposLivro)Session["SessionTiposLivroSelecionado"]; }
@@ -124,58 +123,61 @@ namespace ProjetoLivraria.Livraria
         {
             try
             {
-                this.ListaTiposLivro = ioTiposLivroDAO.BuscaTiposLivro();
-                this.cbCadastroCategoria.DataSource = this.ListaTiposLivro.OrderBy(loTipoLivro => loTipoLivro.til_ds_descricao);
-                this.cbCadastroCategoria.TextField = "til_ds_descricao";
-                this.cbCadastroCategoria.ValueField = "til_id_tipo_livro";
-                this.cbCadastroCategoria.DataBind();
-
-
-                this.ListaAutores = ioAutoresDAO.BuscaAutores();
-                this.cbCadastroAutorLivro.DataSource = this.ListaAutores.OrderBy(loAutor => loAutor.aut_nome_completo);
-                this.cbCadastroAutorLivro.TextField = "aut_nome_completo";
-                this.cbCadastroAutorLivro.ValueField = "aut_id_autor";
-                this.cbCadastroAutorLivro.DataBind();
-
-                this.ListaEditores = ioEditoresDAO.BuscaEditores();
-                this.cbCadastroEditorLivro.DataSource = this.ListaEditores.OrderBy(loEditor => loEditor.edi_nm_editor);
-                this.cbCadastroEditorLivro.TextField = "edi_nm_editor";
-                this.cbCadastroEditorLivro.ValueField = "edi_id_editor";
-                this.cbCadastroEditorLivro.DataBind();
-
-
-                this.ListaLivros = ioLivrosDAO.BuscaLivrosDTO();
-                this.gvGerenciamentoLivros.DataSource = this.ListaLivros.OrderBy(loLivro => loLivro.liv_nm_titulo);
-
-
-                GridViewDataComboBoxColumn autorCol = (GridViewDataComboBoxColumn)gvGerenciamentoLivros.Columns["aut_id_autor"];
-                autorCol.PropertiesComboBox.DataSource = this.ListaAutores.OrderBy(loAutor => loAutor.aut_nome_completo);
-                autorCol.PropertiesComboBox.ValueField = "aut_id_autor";
-                autorCol.PropertiesComboBox.TextField = "aut_nome_completo";
-
-                GridViewDataComboBoxColumn editorCol = (GridViewDataComboBoxColumn)gvGerenciamentoLivros.Columns["edi_id_editor"];
-                editorCol.PropertiesComboBox.DataSource = this.ListaEditores.OrderBy(loEditor => loEditor.edi_nm_editor);
-                editorCol.PropertiesComboBox.ValueField = "edi_id_editor";
-                editorCol.PropertiesComboBox.TextField = "edi_nm_editor";
-
-                GridViewDataComboBoxColumn categoriaCol = (GridViewDataComboBoxColumn)gvGerenciamentoLivros.Columns["til_id_tipo_livro"];
-                categoriaCol.PropertiesComboBox.DataSource = this.ListaTiposLivro.OrderBy(loTipoLivro => loTipoLivro.til_ds_descricao);
-                categoriaCol.PropertiesComboBox.ValueField = "til_id_tipo_livro";
-                categoriaCol.PropertiesComboBox.TextField = "til_ds_descricao";
-
-                var duplicados = ListaLivros.GroupBy(l => l.liv_id_livro).Where(g => g.Count() > 1).Select(g => g.Key).ToList();
-
-                if (duplicados.Any())
-                {
-                    throw new Exception("IDs duplicados encontrados: " + string.Join(", ", duplicados));
-                }
-
-                this.gvGerenciamentoLivros.DataBind();
+                CarregaListas();
+                CarregarComboBoxes();
+                CarregaGridView();
             }
             catch (Exception e)
             {
                 HttpContext.Current.Response.Write("<script>alert('Falha ao tentar recuperar dados.')</script>" + e.Message);
             }
+        }
+
+        private void CarregaGridView()
+        {
+            this.gvGerenciamentoLivros.DataSource = this.ListaLivros.OrderBy(loLivro => loLivro.liv_nm_titulo);
+
+            GridViewDataComboBoxColumn autorCol = (GridViewDataComboBoxColumn)gvGerenciamentoLivros.Columns["aut_id_autor"];
+            autorCol.PropertiesComboBox.DataSource = this.ListaAutores.OrderBy(loAutor => loAutor.aut_nome_completo);
+            autorCol.PropertiesComboBox.ValueField = "aut_id_autor";
+            autorCol.PropertiesComboBox.TextField = "aut_nome_completo";
+
+            GridViewDataComboBoxColumn editorCol = (GridViewDataComboBoxColumn)gvGerenciamentoLivros.Columns["edi_id_editor"];
+            editorCol.PropertiesComboBox.DataSource = this.ListaEditores.OrderBy(loEditor => loEditor.edi_nm_editor);
+            editorCol.PropertiesComboBox.ValueField = "edi_id_editor";
+            editorCol.PropertiesComboBox.TextField = "edi_nm_editor";
+
+            GridViewDataComboBoxColumn categoriaCol = (GridViewDataComboBoxColumn)gvGerenciamentoLivros.Columns["til_id_tipo_livro"];
+            categoriaCol.PropertiesComboBox.DataSource = this.ListaTiposLivro.OrderBy(loTipoLivro => loTipoLivro.til_ds_descricao);
+            categoriaCol.PropertiesComboBox.ValueField = "til_id_tipo_livro";
+            categoriaCol.PropertiesComboBox.TextField = "til_ds_descricao";
+            this.gvGerenciamentoLivros.DataBind();
+        }
+
+        private void CarregarComboBoxes()
+        {
+            this.cbCadastroCategoria.DataSource = this.ListaTiposLivro.OrderBy(loTipoLivro => loTipoLivro.til_ds_descricao);
+            this.cbCadastroCategoria.TextField = "til_ds_descricao";
+            this.cbCadastroCategoria.ValueField = "til_id_tipo_livro";
+            this.cbCadastroCategoria.DataBind();
+
+            this.cbCadastroAutorLivro.DataSource = this.ListaAutores.OrderBy(loAutor => loAutor.aut_nome_completo);
+            this.cbCadastroAutorLivro.TextField = "aut_nome_completo";
+            this.cbCadastroAutorLivro.ValueField = "aut_id_autor";
+            this.cbCadastroAutorLivro.DataBind();
+
+            this.cbCadastroEditorLivro.DataSource = this.ListaEditores.OrderBy(loEditor => loEditor.edi_nm_editor);
+            this.cbCadastroEditorLivro.TextField = "edi_nm_editor";
+            this.cbCadastroEditorLivro.ValueField = "edi_id_editor";
+            this.cbCadastroEditorLivro.DataBind();
+        }
+
+        private void CarregaListas()
+        {
+            this.ListaTiposLivro = ioTiposLivroDAO.BuscaTiposLivro();
+            this.ListaAutores = ioAutoresDAO.BuscaAutores();
+            this.ListaEditores = ioEditoresDAO.BuscaEditores();
+            this.ListaLivros = ioLivrosDAO.BuscaLivrosDTO();
         }
 
         protected void BtnNovoLivro_Click(object sender, EventArgs e)
@@ -216,8 +218,7 @@ namespace ProjetoLivraria.Livraria
             try
             {
                 decimal idLivro = Convert.ToDecimal(e.Keys["liv_id_livro"]);
-                int visibleIndex = gvGerenciamentoLivros.FindVisibleIndexByKeyValue(idLivro);
-                decimal idAutor = Convert.ToDecimal(gvGerenciamentoLivros.GetRowValues(visibleIndex, "aut_id_autor"));
+                decimal idAutor = Convert.ToDecimal(e.NewValues["aut_id_autor"]);
                 decimal idCategoria = Convert.ToDecimal(e.NewValues["til_id_tipo_livro"]);
                 decimal idEditor = Convert.ToDecimal(e.NewValues["edi_id_editor"]);
                 string titulo = e.NewValues["liv_nm_titulo"].ToString();
