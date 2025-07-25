@@ -107,12 +107,11 @@ namespace ProjetoLivraria.DAO
                 try
                 {
                     ioConexao.Open();
-                    ioQuery = new SqlCommand("UPDATE LIA_LIVRO_AUTOR SET LIA_ID_AUTOR = @idAutor, LIA_PC_ROYALTY = @royalty WHERE LIA_ID_LIVRO = @idLivro", ioConexao);
+                    ioQuery = new SqlCommand("UPDATE LIA_LIVRO_AUTOR SET LIA_ID_LIVRO = @idlivro,LIA_ID_AUTOR = @idAutor,LIA_PC_ROYALTY = @royalty WHERE LIA_ID_LIVRO = @idLivro", ioConexao);
                     ioQuery.Parameters.Add(new SqlParameter("@idAutor", aoLivroEAutor.lia_id_autor));
                     ioQuery.Parameters.Add(new SqlParameter("@idLivro", aoLivroEAutor.lia_id_livro));
                     ioQuery.Parameters.Add(new SqlParameter("@royalty", aoLivroEAutor.lia_pc_royalty));
                     liQtdRegistrosInseridos = ioQuery.ExecuteNonQuery();
-
                 }
                 catch
                 {
