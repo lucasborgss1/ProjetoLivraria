@@ -117,6 +117,7 @@ namespace ProjetoLivraria.Livraria
         protected void Page_Load(object sender, EventArgs e)
         {
             CarregaDados();
+            
         }
 
         private void CarregaDados()
@@ -135,20 +136,42 @@ namespace ProjetoLivraria.Livraria
 
         private void CarregaGridView()
         {
-            this.gvGerenciamentoLivros.DataSource = this.ListaLivros.OrderBy(loLivro => loLivro.liv_nm_titulo);
+
+            if (AutoresSessao != null)
+            {
+                var livrosFiltrados = this.ListaLivros.Where(l => l.aut_id_autor == AutoresSessao.aut_id_autor).ToList();
+                this.gvGerenciamentoLivros.DataSource = livrosFiltrados.OrderBy(loLivro => loLivro.liv_nm_titulo);
+                AutoresSessao = null;
+            }
+            else if (TiposLivroSessao != null)
+            {
+                var livrosFiltrados = this.ListaLivros.Where(l => l.til_id_tipo_livro == TiposLivroSessao.til_id_tipo_livro).ToList();
+                this.gvGerenciamentoLivros.DataSource = livrosFiltrados.OrderBy(loLivro => loLivro.liv_nm_titulo);
+                TiposLivroSessao = null;
+            }
+            else if (EditoresSessao != null)
+            {
+                var livrosFiltrados = this.ListaLivros.Where(l => l.edi_id_editor == EditoresSessao.edi_id_editor).ToList();
+                this.gvGerenciamentoLivros.DataSource = livrosFiltrados.OrderBy(loLivro => loLivro.liv_nm_titulo);
+                EditoresSessao = null;
+            } 
+            else
+            {
+                this.gvGerenciamentoLivros.DataSource = this.ListaLivros.OrderBy(loLivro => loLivro.liv_nm_titulo);
+            }
 
             GridViewDataComboBoxColumn autorCol = (GridViewDataComboBoxColumn)gvGerenciamentoLivros.Columns["aut_id_autor"];
-            autorCol.PropertiesComboBox.DataSource = this.ListaAutores.OrderBy(loAutor => loAutor.aut_nome_completo);
+            autorCol.PropertiesComboBox.DataSource = this.ListaAutores;
             autorCol.PropertiesComboBox.ValueField = "aut_id_autor";
             autorCol.PropertiesComboBox.TextField = "aut_nome_completo";
 
             GridViewDataComboBoxColumn editorCol = (GridViewDataComboBoxColumn)gvGerenciamentoLivros.Columns["edi_id_editor"];
-            editorCol.PropertiesComboBox.DataSource = this.ListaEditores.OrderBy(loEditor => loEditor.edi_nm_editor);
+            editorCol.PropertiesComboBox.DataSource = this.ListaEditores;
             editorCol.PropertiesComboBox.ValueField = "edi_id_editor";
             editorCol.PropertiesComboBox.TextField = "edi_nm_editor";
 
             GridViewDataComboBoxColumn categoriaCol = (GridViewDataComboBoxColumn)gvGerenciamentoLivros.Columns["til_id_tipo_livro"];
-            categoriaCol.PropertiesComboBox.DataSource = this.ListaTiposLivro.OrderBy(loTipoLivro => loTipoLivro.til_ds_descricao);
+            categoriaCol.PropertiesComboBox.DataSource = this.ListaTiposLivro;
             categoriaCol.PropertiesComboBox.ValueField = "til_id_tipo_livro";
             categoriaCol.PropertiesComboBox.TextField = "til_ds_descricao";
             this.gvGerenciamentoLivros.DataBind();

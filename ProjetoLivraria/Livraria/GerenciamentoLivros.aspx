@@ -141,7 +141,7 @@
 
         <Columns>
             <dx:GridViewDataTextColumn FieldName="liv_id_livro" Caption="ID" Visible="false" />
-            <dx:GridViewDataTextColumn PropertiesTextEdit-MaxLength="20" FieldName="liv_nm_titulo" Caption="Título" />
+            <dx:GridViewDataTextColumn PropertiesTextEdit-MaxLength="50" FieldName="liv_nm_titulo" Caption="Título" />
             <dx:GridViewDataComboBoxColumn FieldName="aut_id_autor" Caption="Autor" Name="aut_id_autor" />
             <dx:GridViewDataComboBoxColumn FieldName="edi_id_editor" Caption="Editor" Name="edi_id_editor"/>
             <dx:GridViewDataTextColumn FieldName="liv_vl_preco" Caption="Preço" />
