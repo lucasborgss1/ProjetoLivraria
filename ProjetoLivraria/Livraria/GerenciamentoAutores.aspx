@@ -91,13 +91,11 @@
             <dx:GridViewCommandColumn ShowEditButton="true" ShowDeleteButton="true">
                 <CustomButtons>
                     <dx:GridViewCommandColumnCustomButton ID="btnLivros" Text="Livros" />
-                    <dx:GridViewCommandColumnCustomButton ID="btnAutorInfo" Text="Informação" />
                 </CustomButtons>
             </dx:GridViewCommandColumn>
         </Columns>
         <SettingsEditing Mode="Batch" />
     </dx:ASPxGridView>
-
     
 </asp:Content>
 

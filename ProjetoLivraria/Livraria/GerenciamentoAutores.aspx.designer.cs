@@ -67,14 +67,5 @@ namespace ProjetoLivraria.Livraria
         /// Modificar a declaração do campo de movimento do arquivo de designer para o arquivo code-behind.
         /// </remarks>
         protected global::DevExpress.Web.GridViewCommandColumnCustomButton btnLivros;
-
-        /// <summary>
-        /// Controle btnAutorInfo.
-        /// </summary>
-        /// <remarks>
-        /// Campo gerado automaticamente.
-        /// Modificar a declaração do campo de movimento do arquivo de designer para o arquivo code-behind.
-        /// </remarks>
-        protected global::DevExpress.Web.GridViewCommandColumnCustomButton btnAutorInfo;
     }
 }
